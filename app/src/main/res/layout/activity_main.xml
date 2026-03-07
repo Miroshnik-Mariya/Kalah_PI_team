@@ -63,7 +63,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
-            android:id="@+id/imageButton8"
+            android:id="@+id/btn_tm_set"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -71,7 +71,7 @@
             app:srcCompat="@drawable/topMenu_set" />
 
         <ImageButton
-            android:id="@+id/imageButton9"
+            android:id="@+id/btn_tm_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -79,7 +79,7 @@
             app:srcCompat="@drawable/topMenu_info" />
 
         <ImageButton
-            android:id="@+id/imageButton10"
+            android:id="@+id/btn_tm_sound"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -87,7 +87,7 @@
             app:srcCompat="@drawable/topMenu_sound_on" />
 
         <ImageButton
-            android:id="@+id/imageButton11"
+            android:id="@+id/btn_tm_statistic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

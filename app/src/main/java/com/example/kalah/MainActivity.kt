@@ -1,6 +1,7 @@
 package com.example.kalah
 
 import android.os.Bundle
+import android.widget.ImageButton
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -17,4 +18,10 @@ class MainActivity : AppCompatActivity() {
             insets
         }
     }
+
+//    ВЕРХНЕЕ МЕНЮ
+    val tm_set: ImageButton = findViewById(R.id.btn_tm_set)
+    val tm_info: ImageButton = findViewById(R.id.btn_tm_info)
+    val tm_sound: ImageButton = findViewById(R.id.btn_tm_sound)
+    val tm_statistic: ImageButton = findViewById(R.id.btn_tm_statistic)
 }

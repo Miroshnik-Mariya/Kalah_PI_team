@@ -8,14 +8,15 @@
     tools:context=".MainActivity"
     android:background="@drawable/main_bckground">
 
+<!--    3 ОСНОВНЫХ КНОПКИ -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
 
         <ImageButton
@@ -24,9 +25,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@null"
-            app:srcCompat="@drawable/btn_play_together"
-            android:contentDescription="Играть вдовоём"/>
-
+            android:contentDescription="Играть вдовоём"
+            app:srcCompat="@drawable/btn_play_together" />
 
         <ImageButton
             android:id="@+id/im_btn_play_ai"
@@ -35,8 +35,8 @@
             android:layout_marginTop="16dp"
             android:layout_weight="1"
             android:background="@null"
-            app:srcCompat="@drawable/btn_play_ai"
-            android:contentDescription="Играть с ИИ"/>
+            android:contentDescription="Играть с ИИ"
+            app:srcCompat="@drawable/btn_play_ai" />
 
         <ImageButton
             android:id="@+id/im_btn_settings"
@@ -45,9 +45,53 @@
             android:layout_marginTop="16dp"
             android:layout_weight="1"
             android:background="@null"
-            app:srcCompat="@drawable/btn_setting_main_menu"
-            android:contentDescription="Настройки"/>
+            android:contentDescription="Настройки"
+            app:srcCompat="@drawable/btn_setting_main_menu" />
 
 
+    </LinearLayout>
+
+<!--    ВЕРХНЕЕ МЕНЮ-->
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:orientation="horizontal"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/imageButton8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            app:srcCompat="@drawable/topMenu_set" />
+
+        <ImageButton
+            android:id="@+id/imageButton9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            app:srcCompat="@drawable/topMenu_info" />
+
+        <ImageButton
+            android:id="@+id/imageButton10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            app:srcCompat="@drawable/topMenu_sound_on" />
+
+        <ImageButton
+            android:id="@+id/imageButton11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            app:srcCompat="@drawable/topMenu_statistic" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

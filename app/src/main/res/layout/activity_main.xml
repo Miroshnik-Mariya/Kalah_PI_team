@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@null"
-            app:srcCompat="@drawable/topMenu_set" />
+            app:srcCompat="@drawable/topmenu_set" />
 
         <ImageButton
             android:id="@+id/btn_tm_info"
@@ -76,7 +76,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@null"
-            app:srcCompat="@drawable/topMenu_info" />
+            app:srcCompat="@drawable/topmenu_info" />
 
         <ImageButton
             android:id="@+id/btn_tm_sound"
@@ -84,7 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@null"
-            app:srcCompat="@drawable/topMenu_sound_on" />
+            app:srcCompat="@drawable/topmenu_sound_on" />
 
         <ImageButton
             android:id="@+id/btn_tm_statistic"
@@ -92,6 +92,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@null"
-            app:srcCompat="@drawable/topMenu_statistic" />
+            app:srcCompat="@drawable/topmenu_statistic" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

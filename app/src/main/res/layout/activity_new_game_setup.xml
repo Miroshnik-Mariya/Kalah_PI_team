@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_bckground"
+    tools:context=".NewGameSetup">
+
+    <ImageView
+        android:id="@+id/boardImageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="32dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/info_authors_bckg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Заголовок -->
+
+    <!-- Количество лунок -->
+
+
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Новая игра"
+        android:textColor="@color/white"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.227" />
+
+    <!-- Количество камней -->
+
+    <!-- Сложность AI (будет видна только для режима с AI) -->
+
+
+    <TextView
+        android:id="@+id/text_count_lunki"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="152dp"
+        android:layout_marginTop="28dp"
+        android:text="Количество лунок на стороне:"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/boardImageView"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <EditText
+        android:id="@+id/tvLunkiValue"
+        android:layout_width="80dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="40dp"
+        android:background="@drawable/edit_text_bg"
+        android:gravity="center"
+        android:inputType="number"
+        android:maxLength="1"
+        android:text="6"
+        android:textColor="#4CAF50"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/boardImageView"
+        app:layout_constraintHorizontal_bias="0.284"
+        app:layout_constraintStart_toEndOf="@+id/text_count_lunki"
+        app:layout_constraintTop_toTopOf="@+id/text_count_lunki" />
+
+    <TextView
+        android:id="@+id/text_count_stone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="152dp"
+        android:layout_marginTop="60dp"
+        android:text="Количество камней в лунке:"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/boardImageView"
+        app:layout_constraintTop_toBottomOf="@+id/text_count_lunki" />
+
+    <EditText
+        android:id="@+id/tvStoneValue"
+        android:layout_width="80dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="40dp"
+        android:background="@drawable/edit_text_bg"
+        android:gravity="center"
+        android:inputType="number"
+        android:maxLength="1"
+        android:text="4"
+        android:textColor="#4CAF50"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/boardImageView"
+        app:layout_constraintHorizontal_bias="0.371"
+        app:layout_constraintStart_toEndOf="@+id/text_count_stone"
+        app:layout_constraintTop_toTopOf="@+id/text_count_stone" />
+
+    <TextView
+        android:id="@+id/text_difficulty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Сложность ИИ-соперника (1-3):"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@+id/boardImageView"
+        app:layout_constraintTop_toBottomOf="@+id/text_count_stone"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="20dp" />
+
+    <EditText
+        android:id="@+id/ai_level"
+        android:layout_width="80dp"
+        android:layout_height="48dp"
+        android:text="1"
+        android:textColor="#4CAF50"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:background="@drawable/edit_text_bg"
+        android:inputType="number"
+        android:maxLength="1"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/boardImageView"
+        app:layout_constraintStart_toEndOf="@+id/text_difficulty"
+        app:layout_constraintTop_toTopOf="@+id/text_difficulty"
+        android:layout_marginEnd="40dp"
+        android:layout_marginStart="16dp" />
+
+    <!-- Кнопка "Начать игру" -->
+    <ImageButton
+        android:id="@+id/btnStartGame"
+        android:layout_width="180dp"
+        android:layout_height="50dp"
+        android:src="@drawable/btn_dalee"
+        android:background="@null"
+        android:scaleType="fitCenter"
+        android:contentDescription="Начать игру"
+        app:layout_constraintBottom_toBottomOf="@+id/boardImageView"
+        app:layout_constraintEnd_toEndOf="@+id/boardImageView"
+        app:layout_constraintStart_toStartOf="@+id/boardImageView"
+        android:layout_marginBottom="40dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,6 +8,16 @@
     android:background="@drawable/main_bckground"
     tools:context=".NewGameSetup">
 
+    <!-- Заголовок -->
+
+    <!-- Количество лунок -->
+
+
+    <!-- Количество камней -->
+
+    <!-- Сложность AI (будет видна только для режима с AI) -->
+
+
     <ImageView
         android:id="@+id/boardImageView"
         android:layout_width="0dp"
@@ -17,14 +27,9 @@
         android:src="@drawable/info_authors_bckg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Заголовок -->
-
-    <!-- Количество лунок -->
-
-
 
     <TextView
         android:id="@+id/textView"
@@ -38,19 +43,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.227" />
-
-    <!-- Количество камней -->
-
-    <!-- Сложность AI (будет видна только для режима с AI) -->
-
+        app:layout_constraintVertical_bias="0.176" />
 
     <TextView
         android:id="@+id/text_count_lunki"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="152dp"
-        android:layout_marginTop="28dp"
+        android:layout_width="163dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="212dp"
+        android:layout_marginTop="20dp"
         android:text="Количество лунок на стороне:"
         android:textColor="@color/white"
         android:textSize="18sp"
@@ -78,10 +78,10 @@
 
     <TextView
         android:id="@+id/text_count_stone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="152dp"
-        android:layout_marginTop="60dp"
+        android:layout_width="163dp"
+        android:layout_height="69dp"
+        android:layout_marginStart="212dp"
+        android:layout_marginTop="8dp"
         android:text="Количество камней в лунке:"
         android:textColor="@color/white"
         android:textSize="18sp"
@@ -104,7 +104,7 @@
         android:textSize="28sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/boardImageView"
-        app:layout_constraintHorizontal_bias="0.371"
+        app:layout_constraintHorizontal_bias="0.282"
         app:layout_constraintStart_toEndOf="@+id/text_count_stone"
         app:layout_constraintTop_toTopOf="@+id/text_count_stone" />
 

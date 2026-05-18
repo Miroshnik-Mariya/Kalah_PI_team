@@ -1,5 +1,6 @@
 package com.example.kalah
 
+import android.R
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color

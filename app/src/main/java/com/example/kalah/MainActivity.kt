@@ -57,6 +57,12 @@ class MainActivity : AppCompatActivity() {
             // startActivity(intent)
         }
 
+        // КНОПКА СТАТИСТИКИ
+        tmStatistic.setOnClickListener {
+            val intent = Intent(this, StatisticsActivity::class.java)
+            startActivity(intent)
+        }
+
         // КНОПКА НАСТРОЕК В ВЕРХНЕМ МЕНЮ
         tmSet.setOnClickListener {
             // TODO: Открыть экран настроек
@@ -67,12 +73,7 @@ class MainActivity : AppCompatActivity() {
             // TODO: Включить/выключить звук
         }
 
-        // КНОПКА СТАТИСТИКИ
-        tmStatistic.setOnClickListener {
-            // TODO: Открыть экран статистики
-            // val intent = Intent(this, StatisticsActivity::class.java)
-            // startActivity(intent)
-        }
+
     }
 
     private fun startRegistration(isVsAI: Boolean) {
@@ -88,7 +89,7 @@ class MainActivity : AppCompatActivity() {
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.setCancelable(true)
 
-        val okText = dialog.findViewById<TextView>(R.id.dialog_button)
+        val okText = dialog.findViewById<ImageButton>(R.id.dialog_button)
         okText.setOnClickListener {
             dialog.dismiss()
         }

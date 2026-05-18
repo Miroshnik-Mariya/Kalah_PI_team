@@ -46,10 +46,10 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/boardImageView"
         app:layout_constraintEnd_toEndOf="@+id/boardImageView"
-        app:layout_constraintHorizontal_bias="0.275"
+        app:layout_constraintHorizontal_bias="0.32"
         app:layout_constraintStart_toStartOf="@+id/boardImageView"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.403" />
+        app:layout_constraintVertical_bias="0.405" />
 
     <TextView
         android:id="@+id/choseAvatar"
@@ -60,10 +60,10 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/boardImageView"
         app:layout_constraintEnd_toEndOf="@+id/boardImageView"
-        app:layout_constraintHorizontal_bias="0.295"
+        app:layout_constraintHorizontal_bias="0.342"
         app:layout_constraintStart_toStartOf="@+id/boardImageView"
         app:layout_constraintTop_toBottomOf="@+id/enterName"
-        app:layout_constraintVertical_bias="0.462" />
+        app:layout_constraintVertical_bias="0.427" />
 
     <EditText
         android:id="@+id/editEnterName"

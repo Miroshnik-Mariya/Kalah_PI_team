@@ -41,9 +41,21 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    implementation ("androidx.room:room-runtime:2.6.1")
+    implementation(libs.androidx.room3.common.jvm)
+    annotationProcessor ("androidx.room:room-compiler:2.6.1")
+
+    implementation("androidx.cardview:cardview:1.0.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
+
+
+
+
 }

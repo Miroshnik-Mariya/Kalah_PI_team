@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/pit_background"
+    android:padding="4dp"
+    android:layout_margin="2dp">
+
+    <!-- Контейнер для камней -->
+    <LinearLayout
+        android:id="@+id/stonesContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:maxWidth="40dp" />
+
+    <!-- Количество камней -->
+    <TextView
+        android:id="@+id/stoneCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textSize="14sp"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:text="0" />
+
+</LinearLayout>

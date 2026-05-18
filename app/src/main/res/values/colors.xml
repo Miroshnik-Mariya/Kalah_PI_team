@@ -7,4 +7,8 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="primary_green">#4CAF50</color>
+
+
+    <color name="victory_green">#4CAF50</color>
+    <color name="defeat_red">#F44336</color>
 </resources>

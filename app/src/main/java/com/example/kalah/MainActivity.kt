@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -50,12 +51,7 @@ class MainActivity : AppCompatActivity() {
             startRegistration(isVsAI = true)
         }
 
-        // КНОПКА "НАСТРОЙКИ"
-        btnSetting.setOnClickListener {
-            // TODO: Открыть экран настроек
-            // val intent = Intent(this, SettingsActivity::class.java)
-            // startActivity(intent)
-        }
+
 
         // КНОПКА СТАТИСТИКИ
         tmStatistic.setOnClickListener {
@@ -63,9 +59,28 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+
+
+        // Кнопка "НАСТРОЙКИ"
+        btnSetting.setOnClickListener {
+            try {
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         // КНОПКА НАСТРОЕК В ВЕРХНЕМ МЕНЮ
         tmSet.setOnClickListener {
-            // TODO: Открыть экран настроек
+            try {
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
 
         // КНОПКА ЗВУКА

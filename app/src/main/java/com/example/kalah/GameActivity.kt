@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.kalah.database.AppDatabase
@@ -46,10 +47,18 @@ class GameActivity : AppCompatActivity() {
     private var isAIThinking = false
     private val pitViews = mutableMapOf<Int, View>()
     private val pitCounters = mutableMapOf<Int, TextView>()
+    private var currentPitStyle = R.drawable.pit_wood_background
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
+
+        // Настройка обработки кнопки "Назад" через OnBackPressedDispatcher
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                showExitDialog()
+            }
+        })
 
         try {
             // Получаем данные
@@ -99,12 +108,7 @@ class GameActivity : AppCompatActivity() {
 
             // Кнопка меню
             btnMenu.setOnClickListener {
-                AlertDialog.Builder(this)
-                    .setTitle("Выход из игры")
-                    .setMessage("Вы уверены, что хотите выйти в главное меню?")
-                    .setPositiveButton("Да") { _, _ -> finish() }
-                    .setNegativeButton("Нет", null)
-                    .show()
+                showExitDialog()
             }
 
             // Кнопка сброса
@@ -124,26 +128,58 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
+    private fun showExitDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Выход из игры")
+            .setMessage("Вы действительно хотите выйти в главное меню?")
+            .setPositiveButton("Да") { _, _ ->
+                finish()
+            }
+            .setNegativeButton("Нет", null)
+            .show()
+    }
+
     private fun createBoard() {
         topPitsContainer.removeAllViews()
         bottomPitsContainer.removeAllViews()
         pitViews.clear()
         pitCounters.clear()
 
-        // ВЕРХНИЕ ЛУНКИ (игрок 2/AI) - располагаем СПРАВА НАЛЕВО
+        // Применяем стиль оформления
+        applyBoardStyle()
+
+        // ВЕРХНИЕ ЛУНКИ (игрок 2/AI)
         for (i in (pitsPerPlayer - 1) downTo 0) {
             val pitIndex = pitsPerPlayer + 1 + i
             val pitView = createPitView(pitIndex, gameLogic.getStonesInPit(pitIndex))
             pitView.setOnClickListener { onPitClick(pitIndex) }
+
+            // Фиксированные размеры для лунки
+            val params = LinearLayout.LayoutParams(
+                resources.getDimensionPixelSize(R.dimen.pit_width),
+                resources.getDimensionPixelSize(R.dimen.pit_height)
+            )
+            params.setMargins(6, 6, 6, 6)
+            pitView.layoutParams = params
+
             topPitsContainer.addView(pitView)
             pitViews[pitIndex] = pitView
         }
 
-        // НИЖНИЕ ЛУНКИ (игрок 1) - располагаем СЛЕВА НАПРАВО
+        // НИЖНИЕ ЛУНКИ (игрок 1)
         for (i in 0 until pitsPerPlayer) {
             val pitIndex = i
             val pitView = createPitView(pitIndex, gameLogic.getStonesInPit(pitIndex))
             pitView.setOnClickListener { onPitClick(pitIndex) }
+
+            // Фиксированные размеры для лунки
+            val params = LinearLayout.LayoutParams(
+                resources.getDimensionPixelSize(R.dimen.pit_width),
+                resources.getDimensionPixelSize(R.dimen.pit_height)
+            )
+            params.setMargins(6, 6, 6, 6)
+            pitView.layoutParams = params
+
             bottomPitsContainer.addView(pitView)
             pitViews[pitIndex] = pitView
         }
@@ -151,13 +187,6 @@ class GameActivity : AppCompatActivity() {
 
     private fun createPitView(pitIndex: Int, stones: Int): View {
         val pitView = LayoutInflater.from(this).inflate(R.layout.item_pit, null)
-
-        val params = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        params.setMargins(4, 4, 4, 4)
-        pitView.layoutParams = params
 
         val stoneCount = pitView.findViewById<TextView>(R.id.stoneCount)
         val stonesContainer = pitView.findViewById<LinearLayout>(R.id.stonesContainer)
@@ -279,6 +308,55 @@ class GameActivity : AppCompatActivity() {
         }, delay)
     }
 
+    private fun applyBoardStyle() {
+        val boardStyle = SettingsManager.getBoardStyle(this)
+
+        val boardContainer = findViewById<LinearLayout>(R.id.boardContainer)
+        val kalahLeft = findViewById<LinearLayout>(R.id.kalahLeft)
+        val kalahRight = findViewById<LinearLayout>(R.id.kalahRight)
+
+        when (boardStyle) {
+            "wood" -> {
+                boardContainer?.setBackgroundResource(R.drawable.board_background_wood)
+                kalahLeft?.setBackgroundResource(R.drawable.kalah_background_wood)
+                kalahRight?.setBackgroundResource(R.drawable.kalah_background_wood)
+                currentPitStyle = R.drawable.pit_wood_background
+                applyPitStyle(currentPitStyle)
+            }
+            "metal" -> {
+                boardContainer?.setBackgroundResource(R.drawable.board_background_metal)
+                kalahLeft?.setBackgroundResource(R.drawable.kalah_background_metal)
+                kalahRight?.setBackgroundResource(R.drawable.kalah_background_metal)
+                currentPitStyle = R.drawable.pit_metal_background
+                applyPitStyle(currentPitStyle)
+            }
+        }
+    }
+
+    private fun applyPitStyle(backgroundResId: Int) {
+        pitViews.values.forEach { pitView ->
+            pitView.setBackgroundResource(backgroundResId)
+        }
+    }
+
+    private fun highlightAvailablePits() {
+        val currentPlayer = gameLogic.getCurrentPlayer()
+        val availableMoves = gameLogic.getAvailableMoves()
+
+        // Сначала сбрасываем подсветку всех лунок
+        pitViews.values.forEach { pitView ->
+            pitView.alpha = 0.5f
+            pitView.setBackgroundResource(currentPitStyle)
+        }
+
+        // Подсвечиваем только доступные лунки текущего игрока
+        availableMoves.forEach { pitIndex ->
+            val pitView = pitViews[pitIndex]
+            pitView?.alpha = 1.0f
+            pitView?.setBackgroundResource(R.drawable.pit_highlighted)
+        }
+    }
+
     private fun updateUI() {
         try {
             // Обновляем лунки
@@ -301,9 +379,9 @@ class GameActivity : AppCompatActivity() {
                 }
             }
 
-            // Обновляем калахи
-            tvKalahLeft.text = gameLogic.getPlayer1Score().toString()
-            tvKalahRight.text = gameLogic.getPlayer2Score().toString()
+            // Отображение калахов: левый - игрок 2, правый - игрок 1
+            tvKalahLeft.text = gameLogic.getPlayer2Score().toString()
+            tvKalahRight.text = gameLogic.getPlayer1Score().toString()
 
             // Обновляем информацию об игроках
             tvPlayer1Info.text = "${player1Name}\n${gameLogic.getPlayer1Score()}"
@@ -322,6 +400,9 @@ class GameActivity : AppCompatActivity() {
 
         tvPlayer1Info.alpha = if (currentPlayer == 0) 1.0f else 0.5f
         tvPlayer2Info.alpha = if (currentPlayer == 1) 1.0f else 0.5f
+
+        // Подсвечиваем доступные лунки
+        highlightAvailablePits()
     }
 
     private fun endGame() {
@@ -334,10 +415,8 @@ class GameActivity : AppCompatActivity() {
                 else -> "Ничья"
             }
 
-            // Сохраняем результат в БД
             saveGameResult(winnerName, player1Score, player2Score)
 
-            // Простой диалог без кастомного layout (чтобы избежать ошибок)
             val message = when (gameLogic.getWinner()) {
                 "PLAYER1" -> "$player1Name ПОБЕДИЛ!\n\nСчёт: $player1Score : $player2Score"
                 "PLAYER2" -> "$player2Name ПОБЕДИЛ!\n\nСчёт: $player1Score : $player2Score"
@@ -386,41 +465,66 @@ class GameActivity : AppCompatActivity() {
         aiHandler.removeCallbacksAndMessages(null)
     }
 
-    override fun onBackPressed() {
-        AlertDialog.Builder(this)
-            .setTitle("Выход из игры")
-            .setMessage("Вы действительно хотите выйти в главное меню?")
-            .setPositiveButton("Да") { _, _ ->
-                super.onBackPressed()
-            }
-            .setNegativeButton("Нет", null)
-            .show()
-    }
-
     private fun resetGame() {
         try {
-            // Сбрасываем логику игры
             gameLogic.resetGame()
 
-            // Очищаем и пересоздаём поле
-            createBoard()
+            topPitsContainer.removeAllViews()
+            bottomPitsContainer.removeAllViews()
+            pitViews.clear()
+            pitCounters.clear()
 
-            // Обновляем UI
+            createBoard()
             updateUI()
 
-            // Убираем блокировку AI
             isAIThinking = false
             aiHandler.removeCallbacksAndMessages(null)
 
-            // Если первый ход у AI
             if (isVsAI && gameLogic.getCurrentPlayer() == 1) {
-                makeAIMove()
+                aiHandler.postDelayed({
+                    makeAIMove()
+                }, 500)
             }
 
             Toast.makeText(this, "Игра перезапущена!", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             e.printStackTrace()
+            Toast.makeText(this, "Ошибка при перезапуске: ${e.message}", Toast.LENGTH_SHORT).show()
             recreate()
+        }
+    }
+
+    private fun refreshBoard() {
+        for (i in 0 until pitsPerPlayer) {
+            val bottomPitIndex = i
+            updatePitView(bottomPitIndex, gameLogic.getStonesInPit(bottomPitIndex))
+
+            val topPitIndex = pitsPerPlayer + 1 + i
+            updatePitView(topPitIndex, gameLogic.getStonesInPit(topPitIndex))
+        }
+
+        tvKalahLeft.text = gameLogic.getPlayer2Score().toString()
+        tvKalahRight.text = gameLogic.getPlayer1Score().toString()
+    }
+
+    private fun updatePitView(pitIndex: Int, stones: Int) {
+        val pitView = pitViews[pitIndex]
+        if (pitView != null) {
+            val stoneCount = pitView.findViewById<TextView>(R.id.stoneCount)
+            val stonesContainer = pitView.findViewById<LinearLayout>(R.id.stonesContainer)
+
+            stoneCount.text = stones.toString()
+
+            stonesContainer?.removeAllViews()
+            val maxVisible = minOf(stones, 4)
+            for (j in 0 until maxVisible) {
+                val stone = ImageView(this)
+                stone.setImageResource(R.drawable.ic_stone)
+                val stoneParams = LinearLayout.LayoutParams(25, 25)
+                stoneParams.setMargins(2, 2, 2, 2)
+                stone.layoutParams = stoneParams
+                stonesContainer?.addView(stone)
+            }
         }
     }
 }

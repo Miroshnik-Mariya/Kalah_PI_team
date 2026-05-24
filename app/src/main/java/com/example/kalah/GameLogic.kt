@@ -10,12 +10,12 @@ class GameLogic(
 ) {
     private val totalPits = pitsPerPlayer * 2 + 2
     private val board = IntArray(totalPits)
-    private var currentPlayer = 0 // 0 - игрок 1 (нижний ряд), 1 - игрок 2 (верхний ряд) или AI
+    private var currentPlayer = 0 // 0 - игрок 1 (нижний ряд), 1 - игрок 2 (верхний ряд)
     private var gameIsOver = false
 
     // Индексы калахов
-    private val player1Kalah = pitsPerPlayer
-    private val player2Kalah = totalPits - 1
+    val player1Kalah = pitsPerPlayer           // Калах игрока 1 (нижний ряд, справа)
+    val player2Kalah = totalPits - 1           // Калах игрока 2 (верхний ряд, слева)
 
     init {
         resetGame()
@@ -36,19 +36,20 @@ class GameLogic(
     fun getStonesInPit(pitIndex: Int): Int = board[pitIndex]
 
     // Получить количество камней в калахе игрока
-    fun getKalahStones(player: Int): Int =
-        if (player == 0) board[player1Kalah] else board[player2Kalah]
+    fun getPlayer1Score(): Int = board[player1Kalah]
+    fun getPlayer2Score(): Int = board[player2Kalah]
 
     // Проверка, может ли игрок сходить из этой лунки
     fun canMove(pitIndex: Int): Boolean {
         if (gameIsOver) return false
+        if (board[pitIndex] == 0) return false
 
         return if (currentPlayer == 0) {
             // Игрок 1: лунки от 0 до pitsPerPlayer-1
-            pitIndex in 0 until pitsPerPlayer && board[pitIndex] > 0
+            pitIndex in 0 until pitsPerPlayer
         } else {
             // Игрок 2: лунки от pitsPerPlayer+1 до totalPits-2
-            pitIndex in (pitsPerPlayer + 1) until (totalPits - 1) && board[pitIndex] > 0
+            pitIndex in (pitsPerPlayer + 1) until (totalPits - 1)
         }
     }
 
@@ -61,7 +62,7 @@ class GameLogic(
         var stones = board[pitIndex]
         board[pitIndex] = 0
         var currentIdx = pitIndex
-        var lastPitWasKalah = false
+        var extraTurn = false
 
         // Разбрасываем камни
         while (stones > 0) {
@@ -78,33 +79,28 @@ class GameLogic(
         }
 
         // Проверка на попадание в свой калах (дополнительный ход)
-        val extraTurn = when {
-            currentPlayer == 0 && currentIdx == player1Kalah -> {
-                lastPitWasKalah = true
-                true
-            }
-            currentPlayer == 1 && currentIdx == player2Kalah -> {
-                lastPitWasKalah = true
-                true
-            }
-            else -> false
+        if ((currentPlayer == 0 && currentIdx == player1Kalah) ||
+            (currentPlayer == 1 && currentIdx == player2Kalah)) {
+            extraTurn = true
         }
 
-        // Проверка на захват
+        // Проверка на захват (только если последняя лунка не калах и не пуста)
         var captured = 0
-        if (!extraTurn && board[currentIdx] == 1 && isOwnPit(currentIdx)) {
-            val oppositeIdx = getOppositePit(currentIdx)
-            val oppositeStones = board[oppositeIdx]
+        if (!extraTurn && currentIdx != player1Kalah && currentIdx != player2Kalah) {
+            if (isOwnPit(currentIdx) && board[currentIdx] == 1) {
+                val oppositeIdx = getOppositePit(currentIdx)
+                val oppositeStones = board[oppositeIdx]
 
-            if (oppositeStones > 0) {
-                captured = oppositeStones + 1
-                board[currentIdx] = 0
-                board[oppositeIdx] = 0
+                if (oppositeStones > 0) {
+                    captured = oppositeStones + 1
+                    board[currentIdx] = 0
+                    board[oppositeIdx] = 0
 
-                if (currentPlayer == 0) {
-                    board[player1Kalah] += captured
-                } else {
-                    board[player2Kalah] += captured
+                    if (currentPlayer == 0) {
+                        board[player1Kalah] += captured
+                    } else {
+                        board[player2Kalah] += captured
+                    }
                 }
             }
         }
@@ -112,38 +108,35 @@ class GameLogic(
         // Проверка окончания игры
         checkGameOver()
 
-        return if (gameIsOver) {
-            MoveResult.GameOver(getWinner(), getPlayer1Score(), getPlayer2Score())
-        } else if (extraTurn) {
-            MoveResult.ExtraTurn(currentPlayer)
-        } else {
-            MoveResult.Success(currentPlayer, captured)
+        return when {
+            gameIsOver -> MoveResult.GameOver(getWinner(), getPlayer1Score(), getPlayer2Score())
+            extraTurn -> MoveResult.ExtraTurn(currentPlayer, captured)
+            else -> MoveResult.Success(currentPlayer, captured)
         }
     }
 
     // Переключить игрока
     fun switchPlayer() {
-        currentPlayer = 1 - currentPlayer
+        if (!gameIsOver) {
+            currentPlayer = 1 - currentPlayer
+        }
     }
 
     // Проверка, принадлежит ли лунка текущему игроку
     private fun isOwnPit(pitIndex: Int): Boolean {
         return if (currentPlayer == 0) {
-            pitIndex < pitsPerPlayer
+            pitIndex in 0 until pitsPerPlayer
         } else {
-            pitIndex > pitsPerPlayer && pitIndex < totalPits - 1
+            pitIndex in (pitsPerPlayer + 1) until (totalPits - 1)
         }
     }
 
     // Получить противоположную лунку
     private fun getOppositePit(pitIndex: Int): Int {
-        if (pitIndex < pitsPerPlayer) {
-            // Верхняя лунка -> нижняя напротив
-            return (totalPits - 2) - pitIndex
-        } else {
-            // Нижняя лунка -> верхняя напротив
-            return (totalPits - 2) - pitIndex
-        }
+        // Формула для противоположной лунки
+        // Для лунок игрока 1 (0..pitsPerPlayer-1) -> противоположная лунка игрока 2
+        // Для лунок игрока 2 -> противоположная лунка игрока 1
+        return (totalPits - 2) - pitIndex
     }
 
     // Проверка окончания игры
@@ -196,16 +189,33 @@ class GameLogic(
         }
     }
 
-    fun getPlayer1Score(): Int = board[player1Kalah]
-    fun getPlayer2Score(): Int = board[player2Kalah]
-
     fun getCurrentPlayer(): Int = currentPlayer
+
+    // Получить доступные ходы для текущего игрока
+    fun getAvailableMoves(): List<Int> {
+        val moves = mutableListOf<Int>()
+        if (gameIsOver) return moves
+
+        if (currentPlayer == 0) {
+            for (i in 0 until pitsPerPlayer) {
+                if (board[i] > 0) moves.add(i)
+            }
+        } else {
+            for (i in (pitsPerPlayer + 1) until (totalPits - 1)) {
+                if (board[i] > 0) moves.add(i)
+            }
+        }
+        return moves
+    }
+
+    // Проверка, есть ли у игрока доступные ходы
+    fun hasAvailableMoves(): Boolean = getAvailableMoves().isNotEmpty()
 
     // ========== AI ЛОГИКА ==========
 
-    // Получить ход AI (возвращает индекс лунки)
     fun getAIMove(): Int {
-        if (!isVsAI || currentPlayer != 1) return -1
+        if (!isVsAI || currentPlayer != 1 || gameIsOver) return -1
+        if (!hasAvailableMoves()) return -1
 
         return when (aiDifficulty) {
             1 -> getRandomAIMove()
@@ -215,63 +225,43 @@ class GameLogic(
         }
     }
 
-    // Лёгкий уровень: случайный ход среди доступных лунок
     private fun getRandomAIMove(): Int {
-        val availablePits = mutableListOf<Int>()
-        for (i in (pitsPerPlayer + 1) until (totalPits - 1)) {
-            if (board[i] > 0) {
-                availablePits.add(i)
-            }
-        }
+        val availablePits = getAvailableMoves()
         return if (availablePits.isNotEmpty()) {
             availablePits[Random.nextInt(availablePits.size)]
-        } else {
-            -1
-        }
+        } else -1
     }
 
-    // Средний уровень: предпочитает ходы, дающие дополнительный ход или захват
     private fun getMediumAIMove(): Int {
         var bestPit = -1
         var bestScore = -1
 
-        for (pit in (pitsPerPlayer + 1) until (totalPits - 1)) {
-            if (board[pit] > 0) {
-                val score = evaluateMoveForAI(pit)
-                if (score > bestScore) {
-                    bestScore = score
-                    bestPit = pit
-                }
+        for (pit in getAvailableMoves()) {
+            val score = evaluateMoveForAI(pit)
+            if (score > bestScore) {
+                bestScore = score
+                bestPit = pit
             }
         }
-
         return if (bestPit != -1) bestPit else getRandomAIMove()
     }
 
-    // Сложный уровень: оценивает ходы с большей глубиной
     private fun getHardAIMove(): Int {
         var bestPit = -1
         var bestScore = -1000
 
-        for (pit in (pitsPerPlayer + 1) until (totalPits - 1)) {
-            if (board[pit] > 0) {
-                // Симулируем ход
-                val tempBoard = board.copyOf()
-                val tempPlayer = currentPlayer
-
-                val score = simulateMove(pit, tempBoard, tempPlayer)
-
-                if (score > bestScore) {
-                    bestScore = score
-                    bestPit = pit
-                }
+        for (pit in getAvailableMoves()) {
+            val tempBoard = board.copyOf()
+            val tempPlayer = currentPlayer
+            val score = simulateMove(pit, tempBoard, tempPlayer)
+            if (score > bestScore) {
+                bestScore = score
+                bestPit = pit
             }
         }
-
         return if (bestPit != -1) bestPit else getRandomAIMove()
     }
 
-    // Оценка хода для среднего уровня
     private fun evaluateMoveForAI(pit: Int): Int {
         var score = 0
         val stones = board[pit]
@@ -283,7 +273,7 @@ class GameLogic(
         }
 
         // Бонус за возможный захват
-        if (targetIdx != player2Kalah && targetIdx != player1Kalah) {
+        if (targetIdx != player2Kalah && targetIdx != player1Kalah && targetIdx in (pitsPerPlayer + 1) until (totalPits - 1)) {
             val oppositeIdx = getOppositePit(targetIdx)
             if (board[targetIdx] == 0 && board[oppositeIdx] > 0) {
                 score += 8
@@ -296,7 +286,6 @@ class GameLogic(
         return score
     }
 
-    // Симуляция хода для сложного уровня (упрощённая)
     private fun simulateMove(pit: Int, simBoard: IntArray, simPlayer: Int): Int {
         var stones = simBoard[pit]
         simBoard[pit] = 0
@@ -304,75 +293,45 @@ class GameLogic(
 
         while (stones > 0) {
             currentIdx = (currentIdx + 1) % totalPits
-
             when {
                 simPlayer == 0 && currentIdx == player2Kalah -> continue
                 simPlayer == 1 && currentIdx == player1Kalah -> continue
             }
-
             simBoard[currentIdx]++
             stones--
         }
 
         var score = 0
-        val extraTurn = when {
-            simPlayer == 0 && currentIdx == player1Kalah -> true
-            simPlayer == 1 && currentIdx == player2Kalah -> true
-            else -> false
-        }
+        val extraTurn = (simPlayer == 1 && currentIdx == player2Kalah)
 
-        // Оцениваем результат
         if (extraTurn) {
-            score += 15 // Большой бонус за дополнительный ход
+            score += 15
         }
 
-        // Оцениваем захват
-        if (!extraTurn && currentIdx != player1Kalah && currentIdx != player2Kalah &&
-            simBoard[currentIdx] == 1 && isOwnPitForSimulation(currentIdx, simPlayer)) {
-            val oppositeIdx = getOppositePit(currentIdx)
-            if (simBoard[oppositeIdx] > 0) {
-                score += simBoard[oppositeIdx] + 5
+        if (!extraTurn && currentIdx != player1Kalah && currentIdx != player2Kalah) {
+            val isOwn = if (simPlayer == 1) {
+                currentIdx in (pitsPerPlayer + 1) until (totalPits - 1)
+            } else {
+                currentIdx < pitsPerPlayer
+            }
+
+            if (isOwn && simBoard[currentIdx] == 1) {
+                val oppositeIdx = getOppositePit(currentIdx)
+                if (simBoard[oppositeIdx] > 0) {
+                    score += simBoard[oppositeIdx] + 5
+                }
             }
         }
 
-        // Оцениваем, сколько камней попало в калах AI
         score += simBoard[player2Kalah] * 2
-
         return score
-    }
-
-    private fun isOwnPitForSimulation(pitIndex: Int, player: Int): Boolean {
-        return if (player == 0) {
-            pitIndex < pitsPerPlayer
-        } else {
-            pitIndex > pitsPerPlayer && pitIndex < totalPits - 1
-        }
-    }
-
-    // Получить доступные ходы для текущего игрока
-    fun getAvailableMoves(): List<Int> {
-        val moves = mutableListOf<Int>()
-        val start = if (currentPlayer == 0) 0 else pitsPerPlayer + 1
-        val end = if (currentPlayer == 0) pitsPerPlayer else totalPits - 1
-
-        for (i in start until end) {
-            if (board[i] > 0) {
-                moves.add(i)
-            }
-        }
-        return moves
-    }
-
-    // Проверка, есть ли у игрока доступные ходы
-    fun hasAvailableMoves(): Boolean {
-        return getAvailableMoves().isNotEmpty()
     }
 }
 
 // Результат хода
 sealed class MoveResult {
     data class Success(val player: Int, val captured: Int = 0) : MoveResult()
-    data class ExtraTurn(val player: Int) : MoveResult()
+    data class ExtraTurn(val player: Int, val captured: Int = 0) : MoveResult()
     data class GameOver(val winner: String, val player1Score: Int, val player2Score: Int) : MoveResult()
     data class Invalid(val message: String) : MoveResult()
 }

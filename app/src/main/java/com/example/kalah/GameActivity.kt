@@ -3,6 +3,7 @@ package com.example.kalah
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
@@ -12,8 +13,6 @@ import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.example.kalah.database.AppDatabase
-import com.example.kalah.database.GameResult
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -56,7 +55,6 @@ class GameActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
 
-        // Настройка обработки кнопки "Назад" через OnBackPressedDispatcher
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 showExitDialog()
@@ -64,7 +62,6 @@ class GameActivity : AppCompatActivity() {
         })
 
         try {
-            // Получаем данные
             player1Name = intent.getStringExtra("PLAYER1_NAME") ?: "Игрок 1"
             player2Name = intent.getStringExtra("PLAYER2_NAME") ?: "Игрок 2"
             player1Avatar = intent.getIntExtra("PLAYER1_AVATAR", R.drawable.avatar1)
@@ -74,7 +71,6 @@ class GameActivity : AppCompatActivity() {
             isVsAI = intent.getStringExtra("GAME_MODE") == "VS_AI"
             aiDifficulty = intent.getIntExtra("AI_DIFFICULTY", 1)
 
-            // Инициализация UI
             topPitsContainer = findViewById(R.id.topPitsContainer)
             bottomPitsContainer = findViewById(R.id.bottomPitsContainer)
             tvPlayer1Info = findViewById(R.id.tvPlayer1Info)
@@ -89,38 +85,28 @@ class GameActivity : AppCompatActivity() {
             btnMenu = findViewById(R.id.btnMenu)
             btnReset = findViewById(R.id.btnReset)
 
-            // Устанавливаем аватары
             if (player1Avatar != 0) ivPlayer1Avatar.setImageResource(player1Avatar)
             if (player2Avatar != 0) ivPlayer2Avatar.setImageResource(player2Avatar)
 
-            // Устанавливаем имена
             tvPlayer1Info.text = "$player1Name\n0"
             tvPlayer2Info.text = "$player2Name\n0"
 
-            // Устанавливаем имена на калахах
-            tvKalahLeftPlayerName.text = player2Name  // Левый калах - игрок 2
-            tvKalahRightPlayerName.text = player1Name // Правый калах - игрок 1
+            tvKalahLeftPlayerName.text = player2Name
+            tvKalahRightPlayerName.text = player1Name
 
-            // Создаём игровую логику
             gameLogic = GameLogic(pitsPerPlayer, stonesPerPit, isVsAI, aiDifficulty)
 
-            // Создаём поле
             createBoard()
-
-            // Обновляем UI
             updateUI()
 
-            // Если первый ход у AI
             if (isVsAI && gameLogic.getCurrentPlayer() == 1) {
                 makeAIMove()
             }
 
-            // Кнопка меню
             btnMenu.setOnClickListener {
                 showExitDialog()
             }
 
-            // Кнопка сброса
             btnReset.setOnClickListener {
                 AlertDialog.Builder(this)
                     .setTitle("Сброс игры")
@@ -138,12 +124,9 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun showSnackbar(message: String, isLong: Boolean = false) {
-        // Отменяем предыдущий Snackbar
         currentSnackbar?.dismiss()
-
         val rootView = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.main)
         val duration = if (isLong) Snackbar.LENGTH_LONG else Snackbar.LENGTH_SHORT
-
         currentSnackbar = Snackbar.make(rootView, message, duration)
         currentSnackbar?.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
         currentSnackbar?.show()
@@ -166,16 +149,13 @@ class GameActivity : AppCompatActivity() {
         pitViews.clear()
         pitCounters.clear()
 
-        // Применяем стиль оформления
         applyBoardStyle()
 
-        // ВЕРХНИЕ ЛУНКИ (игрок 2/AI)
         for (i in (pitsPerPlayer - 1) downTo 0) {
             val pitIndex = pitsPerPlayer + 1 + i
             val pitView = createPitView(pitIndex, gameLogic.getStonesInPit(pitIndex))
             pitView.setOnClickListener { onPitClick(pitIndex) }
 
-            // Фиксированные размеры для лунки
             val params = LinearLayout.LayoutParams(
                 resources.getDimensionPixelSize(R.dimen.pit_width),
                 resources.getDimensionPixelSize(R.dimen.pit_height)
@@ -187,13 +167,11 @@ class GameActivity : AppCompatActivity() {
             pitViews[pitIndex] = pitView
         }
 
-        // НИЖНИЕ ЛУНКИ (игрок 1)
         for (i in 0 until pitsPerPlayer) {
             val pitIndex = i
             val pitView = createPitView(pitIndex, gameLogic.getStonesInPit(pitIndex))
             pitView.setOnClickListener { onPitClick(pitIndex) }
 
-            // Фиксированные размеры для лунки
             val params = LinearLayout.LayoutParams(
                 resources.getDimensionPixelSize(R.dimen.pit_width),
                 resources.getDimensionPixelSize(R.dimen.pit_height)
@@ -215,7 +193,6 @@ class GameActivity : AppCompatActivity() {
         stoneCount.text = stones.toString()
         pitCounters[pitIndex] = stoneCount
 
-        // Визуализация камней
         stonesContainer?.removeAllViews()
         val maxVisible = minOf(stones, 4)
         for (j in 0 until maxVisible) {
@@ -231,7 +208,6 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun onPitClick(pitIndex: Int) {
-        // Скрываем предыдущий Snackbar при новом ходе
         currentSnackbar?.dismiss()
 
         if (isAIThinking) {
@@ -248,9 +224,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun makeMove(pitIndex: Int) {
-        // Скрываем предыдущий Snackbar
         currentSnackbar?.dismiss()
-
         val result = gameLogic.makeMove(pitIndex)
 
         when (result) {
@@ -370,13 +344,11 @@ class GameActivity : AppCompatActivity() {
         val currentPlayer = gameLogic.getCurrentPlayer()
         val availableMoves = gameLogic.getAvailableMoves()
 
-        // Сначала сбрасываем подсветку всех лунок
         pitViews.values.forEach { pitView ->
             pitView.alpha = 0.5f
             pitView.setBackgroundResource(currentPitStyle)
         }
 
-        // Подсвечиваем только доступные лунки текущего игрока
         availableMoves.forEach { pitIndex ->
             val pitView = pitViews[pitIndex]
             pitView?.alpha = 1.0f
@@ -386,7 +358,6 @@ class GameActivity : AppCompatActivity() {
 
     private fun updateUI() {
         try {
-            // Обновляем лунки
             pitCounters.forEach { (pitIndex, textView) ->
                 textView.text = gameLogic.getStonesInPit(pitIndex).toString()
 
@@ -406,11 +377,9 @@ class GameActivity : AppCompatActivity() {
                 }
             }
 
-            // Отображение калахов: левый - игрок 2, правый - игрок 1
             tvKalahLeft.text = gameLogic.getPlayer2Score().toString()
             tvKalahRight.text = gameLogic.getPlayer1Score().toString()
 
-            // Обновляем информацию об игроках
             tvPlayer1Info.text = "${player1Name}\n${gameLogic.getPlayer1Score()}"
             tvPlayer2Info.text = "${player2Name}\n${gameLogic.getPlayer2Score()}"
 
@@ -428,7 +397,6 @@ class GameActivity : AppCompatActivity() {
         tvPlayer1Info.alpha = if (currentPlayer == 0) 1.0f else 0.5f
         tvPlayer2Info.alpha = if (currentPlayer == 1) 1.0f else 0.5f
 
-        // Подсвечиваем доступные лунки
         highlightAvailablePits()
     }
 
@@ -468,22 +436,23 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun saveGameResult(winnerName: String, player1Score: Int, player2Score: Int) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val result = GameResult(
-                    player1Name = player1Name,
-                    player2Name = player2Name,
-                    winnerName = winnerName,
-                    player1Score = player1Score,
-                    player2Score = player2Score,
-                    pitsPerPlayer = pitsPerPlayer,
-                    stonesPerPit = stonesPerPit,
-                    gameMode = if (isVsAI) "VS_AI" else "TWO_PLAYERS"
-                )
-                AppDatabase.getInstance(this@GameActivity).gameResultDao().insert(result)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        try {
+            val result = GameResultSimple(
+                player1Name = player1Name,
+                player2Name = player2Name,
+                winnerName = winnerName,
+                player1Score = player1Score,
+                player2Score = player2Score,
+                pitsPerPlayer = pitsPerPlayer,
+                stonesPerPit = stonesPerPit,
+                gameMode = if (isVsAI) "VS_AI" else "TWO_PLAYERS",
+                timestamp = System.currentTimeMillis()
+            )
+            StatisticsManager.saveResult(this, result)
+            showSnackbar("Результат сохранён в статистику")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            showSnackbar("Ошибка сохранения: ${e.message}", true)
         }
     }
 

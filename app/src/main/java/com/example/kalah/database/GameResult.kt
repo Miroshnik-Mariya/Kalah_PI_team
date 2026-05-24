@@ -12,10 +12,8 @@ data class GameResult(
     val player2Score: Int,
     val pitsPerPlayer: Int,
     val stonesPerPit: Int,
-    val gameMode: String // "TWO_PLAYERS" или "VS_AI"
-) {
+    val gameMode: String, // "TWO_PLAYERS" или "VS_AI"
+    val timestamp: Long = System.currentTimeMillis(),
     @PrimaryKey(autoGenerate = true)
-    var id: Int = 0
-
-    var timestamp: Long = System.currentTimeMillis()
-}
+    val id: Int = 0
+)

@@ -34,7 +34,7 @@
                 android:id="@+id/tvGameMode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="👥 Два игрока"
+                android:text="Два игрока"
                 android:textSize="12sp"
                 android:textColor="#4CAF50"
                 android:background="#E8F5E9"

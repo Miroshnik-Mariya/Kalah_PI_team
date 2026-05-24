@@ -77,18 +77,18 @@ class StatisticsActivity : AppCompatActivity() {
             matchesList.addAll(allResults)
             adapter.notifyDataSetChanged()
 
-            tvTotalGames.text = "📊 Всего: ${allResults.size}"
-            tvVsAICount.text = "🤖 AI: $vsAICount"
-            tvTwoPlayersCount.text = "👥 2P: $twoPlayersCount"
+            tvTotalGames.text = "Всего: ${allResults.size}"
+            tvVsAICount.text = "AI: $vsAICount"
+            tvTwoPlayersCount.text = "2P: $twoPlayersCount"
 
             if (allResults.isEmpty()) {
-                tvTotalGames.text = "📊 Всего: 0\n\nНет сохранённых игр"
+                tvTotalGames.text = "Всего: 0\n\nНет сохранённых игр"
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            tvTotalGames.text = "❌ Ошибка загрузки: ${e.message}"
-            tvVsAICount.text = "🤖 AI: --"
-            tvTwoPlayersCount.text = "👥 2P: --"
+            tvTotalGames.text = "Ошибка загрузки: ${e.message}"
+            tvVsAICount.text = "AI: --"
+            tvTwoPlayersCount.text = "2P: --"
         }
     }
 
@@ -99,9 +99,9 @@ class StatisticsActivity : AppCompatActivity() {
             matchesList.clear()
             adapter.notifyDataSetChanged()
 
-            tvTotalGames.text = "📊 Всего: 0"
-            tvVsAICount.text = "🤖 AI: 0"
-            tvTwoPlayersCount.text = "👥 2P: 0"
+            tvTotalGames.text = "Всего: 0"
+            tvVsAICount.text = "против AI: 0"
+            tvTwoPlayersCount.text = "Вдвоём: 0"
 
             AlertDialog.Builder(this)
                 .setTitle("Статистика очищена")
@@ -137,7 +137,7 @@ class StatisticsActivity : AppCompatActivity() {
                 holder.tvDate.text = date
 
                 // Устанавливаем режим игры
-                val gameModeText = if (match.gameMode == "VS_AI") "🤖 Против AI" else "👥 Два игрока"
+                val gameModeText = if (match.gameMode == "VS_AI") "Против AI" else "Два игрока"
                 val gameModeColor = if (match.gameMode == "VS_AI") "#2196F3" else "#4CAF50"
                 holder.tvGameMode.text = gameModeText
                 holder.tvGameMode.setBackgroundColor(Color.parseColor(gameModeColor))
@@ -189,17 +189,17 @@ class StatisticsActivity : AppCompatActivity() {
                 // Настраиваем результат
                 when {
                     match.winnerName == match.player1Name -> {
-                        holder.tvResult.text = "🏆 ПОБЕДА"
+                        holder.tvResult.text = "ПОБЕДА"
                         holder.tvResult.setBackgroundColor(Color.parseColor("#4CAF50"))
                         holder.tvResult.setTextColor(Color.WHITE)
                     }
                     match.winnerName == match.player2Name -> {
-                        holder.tvResult.text = "💔 ПОРАЖЕНИЕ"
+                        holder.tvResult.text = "ПОРАЖЕНИЕ"
                         holder.tvResult.setBackgroundColor(Color.parseColor("#F44336"))
                         holder.tvResult.setTextColor(Color.WHITE)
                     }
                     else -> {
-                        holder.tvResult.text = "🤝 НИЧЬЯ"
+                        holder.tvResult.text = "НИЧЬЯ"
                         holder.tvResult.setBackgroundColor(Color.parseColor("#9E9E9E"))
                         holder.tvResult.setTextColor(Color.WHITE)
                     }

@@ -109,7 +109,7 @@
             android:gravity="center_vertical"
             android:padding="16dp">
 
-            <!-- ЛЕВЫЙ КАЛАХ (игрок 2 / AI) - большой, на всю высоту -->
+            <!-- ЛЕВЫЙ КАЛАХ (игрок 2 / AI) -->
             <LinearLayout
                 android:id="@+id/kalahLeft"
                 android:layout_width="80dp"
@@ -136,7 +136,9 @@
                     android:textColor="#FFD700"
                     android:textStyle="bold" />
 
+                <!-- ДОБАВЛЕН ID ДЛЯ ИМЕНИ ИГРОКА -->
                 <TextView
+                    android:id="@+id/tvKalahLeftPlayerName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Игрок 2"
@@ -180,7 +182,7 @@
 
             </LinearLayout>
 
-            <!-- ПРАВЫЙ КАЛАХ (игрок 1) - большой, на всю высоту -->
+            <!-- ПРАВЫЙ КАЛАХ (игрок 1) -->
             <LinearLayout
                 android:id="@+id/kalahRight"
                 android:layout_width="80dp"
@@ -207,7 +209,9 @@
                     android:textColor="#FFD700"
                     android:textStyle="bold" />
 
+                <!-- ДОБАВЛЕН ID ДЛЯ ИМЕНИ ИГРОКА -->
                 <TextView
+                    android:id="@+id/tvKalahRightPlayerName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Игрок 1"

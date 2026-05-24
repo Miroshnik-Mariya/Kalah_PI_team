@@ -29,6 +29,8 @@ class GameActivity : AppCompatActivity() {
     private lateinit var tvTurn: TextView
     private lateinit var tvKalahLeft: TextView
     private lateinit var tvKalahRight: TextView
+    private lateinit var tvKalahLeftPlayerName: TextView
+    private lateinit var tvKalahRightPlayerName: TextView
     private lateinit var ivPlayer1Avatar: ImageView
     private lateinit var ivPlayer2Avatar: ImageView
     private lateinit var btnMenu: Button
@@ -79,6 +81,8 @@ class GameActivity : AppCompatActivity() {
             tvTurn = findViewById(R.id.tvTurn)
             tvKalahLeft = findViewById(R.id.tvKalahLeft)
             tvKalahRight = findViewById(R.id.tvKalahRight)
+            tvKalahLeftPlayerName = findViewById(R.id.tvKalahLeftPlayerName)
+            tvKalahRightPlayerName = findViewById(R.id.tvKalahRightPlayerName)
             ivPlayer1Avatar = findViewById(R.id.ivPlayer1Avatar)
             ivPlayer2Avatar = findViewById(R.id.ivPlayer2Avatar)
             btnMenu = findViewById(R.id.btnMenu)
@@ -91,6 +95,10 @@ class GameActivity : AppCompatActivity() {
             // Устанавливаем имена
             tvPlayer1Info.text = "$player1Name\n0"
             tvPlayer2Info.text = "$player2Name\n0"
+
+            // Устанавливаем имена на калахах
+            tvKalahLeftPlayerName.text = player2Name  // Левый калах - игрок 2
+            tvKalahRightPlayerName.text = player1Name // Правый калах - игрок 1
 
             // Создаём игровую логику
             gameLogic = GameLogic(pitsPerPlayer, stonesPerPit, isVsAI, aiDifficulty)

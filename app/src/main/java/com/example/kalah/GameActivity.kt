@@ -33,6 +33,7 @@ class GameActivity : AppCompatActivity() {
     private lateinit var ivPlayer1Avatar: ImageView
     private lateinit var ivPlayer2Avatar: ImageView
     private lateinit var btnMenu: Button
+    private lateinit var btnSurrender: Button
     private lateinit var btnReset: Button
 
     private var player1Name = ""
@@ -83,6 +84,7 @@ class GameActivity : AppCompatActivity() {
             ivPlayer1Avatar = findViewById(R.id.ivPlayer1Avatar)
             ivPlayer2Avatar = findViewById(R.id.ivPlayer2Avatar)
             btnMenu = findViewById(R.id.btnMenu)
+            btnSurrender = findViewById(R.id.btnSurrender)
             btnReset = findViewById(R.id.btnReset)
 
             if (player1Avatar != 0) ivPlayer1Avatar.setImageResource(player1Avatar)
@@ -107,6 +109,20 @@ class GameActivity : AppCompatActivity() {
                 showExitDialog()
             }
 
+            btnSurrender.setOnClickListener {
+                if (gameLogic.isGameOver()) {
+                    showSnackbar("Игра уже окончена")
+                    return@setOnClickListener
+                }
+
+                if (isAIThinking) {
+                    showSnackbar("Подождите, AI думает...")
+                    return@setOnClickListener
+                }
+
+                showSurrenderDialog()
+            }
+
             btnReset.setOnClickListener {
                 AlertDialog.Builder(this)
                     .setTitle("Сброс игры")
@@ -117,6 +133,7 @@ class GameActivity : AppCompatActivity() {
                     .setNegativeButton("Нет", null)
                     .show()
             }
+
         } catch (e: Exception) {
             e.printStackTrace()
             showSnackbar("Ошибка: ${e.message}", true)
@@ -140,6 +157,48 @@ class GameActivity : AppCompatActivity() {
                 finish()
             }
             .setNegativeButton("Нет", null)
+            .show()
+    }
+
+    private fun showSurrenderDialog() {
+        val currentPlayerName = if (gameLogic.getCurrentPlayer() == 0) player1Name else player2Name
+
+        AlertDialog.Builder(this)
+            .setTitle("Сдаться?")
+            .setMessage("$currentPlayerName, вы уверены, что хотите сдаться? Это засчитает поражение.")
+            .setPositiveButton("Да, сдаюсь") { _, _ ->
+                performSurrender()
+            }
+            .setNegativeButton("Нет, продолжу", null)
+            .show()
+    }
+
+    private fun performSurrender() {
+        val surrenderingPlayer = gameLogic.getCurrentPlayer()
+
+        val winnerName = if (surrenderingPlayer == 0) player2Name else player1Name
+        val player1Score = gameLogic.getPlayer1Score()
+        val player2Score = gameLogic.getPlayer2Score()
+
+        // Сохраняем результат в статистику
+        saveGameResult(winnerName, player1Score, player2Score)
+
+        val message = if (surrenderingPlayer == 0) {
+            "$player1Name сдался! Победил $player2Name"
+        } else {
+            "$player2Name сдался! Победил $player1Name"
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Игра окончена")
+            .setMessage("$message\n\nСчёт: $player1Score : $player2Score")
+            .setPositiveButton("Главное меню") { _, _ ->
+                finish()
+            }
+            .setNegativeButton("Сыграть ещё") { _, _ ->
+                resetGame()
+            }
+            .setCancelable(false)
             .show()
     }
 
@@ -419,7 +478,7 @@ class GameActivity : AppCompatActivity() {
             }
 
             AlertDialog.Builder(this)
-                .setTitle("🎲 ИГРА ОКОНЧЕНА 🎲")
+                .setTitle("ИГРА ОКОНЧЕНА")
                 .setMessage(message)
                 .setPositiveButton("Сыграть ещё") { _, _ ->
                     resetGame()

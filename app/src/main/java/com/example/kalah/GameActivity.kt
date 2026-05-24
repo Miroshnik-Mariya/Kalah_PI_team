@@ -9,12 +9,12 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.kalah.database.AppDatabase
 import com.example.kalah.database.GameResult
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,6 +50,7 @@ class GameActivity : AppCompatActivity() {
     private val pitViews = mutableMapOf<Int, View>()
     private val pitCounters = mutableMapOf<Int, TextView>()
     private var currentPitStyle = R.drawable.pit_wood_background
+    private var currentSnackbar: Snackbar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -132,8 +133,20 @@ class GameActivity : AppCompatActivity() {
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_LONG).show()
+            showSnackbar("Ошибка: ${e.message}", true)
         }
+    }
+
+    private fun showSnackbar(message: String, isLong: Boolean = false) {
+        // Отменяем предыдущий Snackbar
+        currentSnackbar?.dismiss()
+
+        val rootView = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.main)
+        val duration = if (isLong) Snackbar.LENGTH_LONG else Snackbar.LENGTH_SHORT
+
+        currentSnackbar = Snackbar.make(rootView, message, duration)
+        currentSnackbar?.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
+        currentSnackbar?.show()
     }
 
     private fun showExitDialog() {
@@ -218,13 +231,16 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun onPitClick(pitIndex: Int) {
+        // Скрываем предыдущий Snackbar при новом ходе
+        currentSnackbar?.dismiss()
+
         if (isAIThinking) {
-            Toast.makeText(this, "Подождите, AI думает...", Toast.LENGTH_SHORT).show()
+            showSnackbar("Подождите, AI думает...")
             return
         }
 
         if (!gameLogic.canMove(pitIndex)) {
-            Toast.makeText(this, "Нельзя сходить из этой лунки!", Toast.LENGTH_SHORT).show()
+            showSnackbar("Нельзя сходить из этой лунки!")
             return
         }
 
@@ -232,17 +248,20 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun makeMove(pitIndex: Int) {
+        // Скрываем предыдущий Snackbar
+        currentSnackbar?.dismiss()
+
         val result = gameLogic.makeMove(pitIndex)
 
         when (result) {
             is MoveResult.Invalid -> {
-                Toast.makeText(this, result.message, Toast.LENGTH_SHORT).show()
+                showSnackbar(result.message)
             }
 
             is MoveResult.Success -> {
                 updateUI()
                 if (result.captured > 0) {
-                    Toast.makeText(this, "Захвачено ${result.captured} камней", Toast.LENGTH_SHORT).show()
+                    showSnackbar("Захвачено ${result.captured} камней")
                 }
 
                 gameLogic.switchPlayer()
@@ -260,7 +279,7 @@ class GameActivity : AppCompatActivity() {
 
             is MoveResult.ExtraTurn -> {
                 updateUI()
-                Toast.makeText(this, "Дополнительный ход", Toast.LENGTH_LONG).show()
+                showSnackbar("Дополнительный ход!")
                 updateUITurn()
 
                 if (gameLogic.isGameOver()) {
@@ -282,7 +301,7 @@ class GameActivity : AppCompatActivity() {
 
     private fun makeAIMove() {
         if (!gameLogic.hasAvailableMoves()) {
-            Toast.makeText(this, "У AI нет доступных ходов!", Toast.LENGTH_SHORT).show()
+            showSnackbar("У AI нет доступных ходов!")
             gameLogic.switchPlayer()
             updateUITurn()
             return
@@ -471,6 +490,7 @@ class GameActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         aiHandler.removeCallbacksAndMessages(null)
+        currentSnackbar?.dismiss()
     }
 
     private fun resetGame() {
@@ -494,10 +514,10 @@ class GameActivity : AppCompatActivity() {
                 }, 500)
             }
 
-            Toast.makeText(this, "Игра перезапущена!", Toast.LENGTH_SHORT).show()
+            showSnackbar("Игра перезапущена!")
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(this, "Ошибка при перезапуске: ${e.message}", Toast.LENGTH_SHORT).show()
+            showSnackbar("Ошибка при перезапуске: ${e.message}", true)
             recreate()
         }
     }

@@ -493,12 +493,13 @@ class GameActivity : AppCompatActivity() {
             finish()
         }
     }
-
     private fun saveGameResult(winnerName: String, player1Score: Int, player2Score: Int) {
         try {
             val result = GameResultSimple(
                 player1Name = player1Name,
                 player2Name = player2Name,
+                player1Avatar = player1Avatar,    // Добавлено
+                player2Avatar = player2Avatar,    // Добавлено
                 winnerName = winnerName,
                 player1Score = player1Score,
                 player2Score = player2Score,

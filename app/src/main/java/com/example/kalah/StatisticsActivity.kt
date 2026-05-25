@@ -100,8 +100,8 @@ class StatisticsActivity : AppCompatActivity() {
             adapter.notifyDataSetChanged()
 
             tvTotalGames.text = "Всего: 0"
-            tvVsAICount.text = "против AI: 0"
-            tvTwoPlayersCount.text = "Вдвоём: 0"
+            tvVsAICount.text = "AI: 0"
+            tvTwoPlayersCount.text = "2P: 0"
 
             AlertDialog.Builder(this)
                 .setTitle("Статистика очищена")
@@ -133,60 +133,40 @@ class StatisticsActivity : AppCompatActivity() {
                 val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
                 val date = dateFormat.format(Date(match.timestamp))
 
-                // Устанавливаем дату
                 holder.tvDate.text = date
 
-                // Устанавливаем режим игры
                 val gameModeText = if (match.gameMode == "VS_AI") "Против AI" else "Два игрока"
                 val gameModeColor = if (match.gameMode == "VS_AI") "#2196F3" else "#4CAF50"
                 holder.tvGameMode.text = gameModeText
                 holder.tvGameMode.setBackgroundColor(Color.parseColor(gameModeColor))
 
-                // Устанавливаем имена
                 holder.tvPlayer1Name.text = match.player1Name
                 holder.tvPlayer2Name.text = match.player2Name
 
-                // Устанавливаем счета
                 holder.tvPlayer1Score.text = match.player1Score.toString()
                 holder.tvPlayer2Score.text = match.player2Score.toString()
 
-                // Устанавливаем параметры игры
                 holder.tvSettings.text = "${match.pitsPerPlayer} лунок | ${match.stonesPerPit} камня"
 
-                // Устанавливаем аватары (используем стандартные)
+                // Устанавливаем СОХРАНЁННЫЕ аватары
                 try {
-                    val avatarRes = when (position % 10) {
-                        0 -> R.drawable.avatar1
-                        1 -> R.drawable.avatar2
-                        2 -> R.drawable.avatar3
-                        3 -> R.drawable.avatar4
-                        4 -> R.drawable.avatar5
-                        5 -> R.drawable.avatar6
-                        6 -> R.drawable.avatar7
-                        7 -> R.drawable.avatar8
-                        8 -> R.drawable.avatar9
-                        else -> R.drawable.avatar10
+                    if (match.player1Avatar != 0) {
+                        holder.ivPlayer1Avatar.setImageResource(match.player1Avatar)
+                    } else {
+                        holder.ivPlayer1Avatar.setImageResource(R.drawable.avatar1)
                     }
-                    holder.ivPlayer1Avatar.setImageResource(avatarRes)
 
-                    val avatarRes2 = when (position % 10) {
-                        0 -> R.drawable.avatar2
-                        1 -> R.drawable.avatar3
-                        2 -> R.drawable.avatar4
-                        3 -> R.drawable.avatar5
-                        4 -> R.drawable.avatar6
-                        5 -> R.drawable.avatar7
-                        6 -> R.drawable.avatar8
-                        7 -> R.drawable.avatar9
-                        8 -> R.drawable.avatar10
-                        else -> R.drawable.avatar1
+                    if (match.player2Avatar != 0) {
+                        holder.ivPlayer2Avatar.setImageResource(match.player2Avatar)
+                    } else {
+                        holder.ivPlayer2Avatar.setImageResource(R.drawable.avatar2)
                     }
-                    holder.ivPlayer2Avatar.setImageResource(avatarRes2)
                 } catch (e: Exception) {
-                    // Если аватаров нет, оставляем как есть
+                    // Если аватар не найден, ставим стандартный
+                    holder.ivPlayer1Avatar.setImageResource(R.drawable.avatar1)
+                    holder.ivPlayer2Avatar.setImageResource(R.drawable.avatar2)
                 }
 
-                // Настраиваем результат
                 when {
                     match.winnerName == match.player1Name -> {
                         holder.tvResult.text = "ПОБЕДА"

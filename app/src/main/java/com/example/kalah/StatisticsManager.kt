@@ -1,12 +1,15 @@
 package com.example.kalah
 
 import android.content.Context
+import android.content.SharedPreferences
 import org.json.JSONArray
 import org.json.JSONObject
 
 data class GameResultSimple(
     val player1Name: String,
     val player2Name: String,
+    val player1Avatar: Int,     // Добавлено
+    val player2Avatar: Int,     // Добавлено
     val winnerName: String,
     val player1Score: Int,
     val player2Score: Int,
@@ -33,6 +36,8 @@ object StatisticsManager {
             val jsonObject = JSONObject().apply {
                 put("player1Name", r.player1Name)
                 put("player2Name", r.player2Name)
+                put("player1Avatar", r.player1Avatar)
+                put("player2Avatar", r.player2Avatar)
                 put("winnerName", r.winnerName)
                 put("player1Score", r.player1Score)
                 put("player2Score", r.player2Score)
@@ -63,6 +68,8 @@ object StatisticsManager {
                 val result = GameResultSimple(
                     player1Name = obj.getString("player1Name"),
                     player2Name = obj.getString("player2Name"),
+                    player1Avatar = obj.getInt("player1Avatar"),
+                    player2Avatar = obj.getInt("player2Avatar"),
                     winnerName = obj.getString("winnerName"),
                     player1Score = obj.getInt("player1Score"),
                     player2Score = obj.getInt("player2Score"),

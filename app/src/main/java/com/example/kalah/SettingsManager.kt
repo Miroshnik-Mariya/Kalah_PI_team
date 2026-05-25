@@ -16,4 +16,17 @@ object SettingsManager {
         val prefs: SharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         return prefs.getString(KEY_BOARD_STYLE, "wood") ?: "wood"
     }
+
+    // Добавьте в SettingsManager
+    private const val KEY_MUSIC_ON = "music_on"
+
+    fun saveMusicOn(context: Context, isOn: Boolean) {
+        val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putBoolean(KEY_MUSIC_ON, isOn).apply()
+    }
+
+    fun isMusicOn(context: Context): Boolean {
+        val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        return prefs.getBoolean(KEY_MUSIC_ON, true)
+    }
 }

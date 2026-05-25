@@ -206,5 +206,14 @@ class StatisticsActivity : AppCompatActivity() {
             val ivPlayer1Avatar: ImageView = itemView.findViewById(R.id.ivPlayer1Avatar)
             val ivPlayer2Avatar: ImageView = itemView.findViewById(R.id.ivPlayer2Avatar)
         }
+
+
+    }
+    override fun onResume() {
+        super.onResume()
+        val isMusicOn = SettingsManager.isMusicOn(this)
+        if (isMusicOn && !MusicManager.isPlaying()) {
+            MusicManager.resume()
+        }
     }
 }

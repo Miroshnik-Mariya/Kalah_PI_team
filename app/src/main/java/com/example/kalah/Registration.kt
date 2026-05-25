@@ -59,6 +59,7 @@ class Registration : AppCompatActivity() {
             showAvatarPickerDialog()
         }
 
+
         // Кнопка Далее
         btnNext.setOnClickListener {
             val playerName = editEnterName.text.toString().trim()
@@ -132,5 +133,10 @@ class Registration : AppCompatActivity() {
         }
 
         dialog.show()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Ничего не делаем с музыкой
     }
 }

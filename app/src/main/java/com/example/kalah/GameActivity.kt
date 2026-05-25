@@ -180,7 +180,6 @@ class GameActivity : AppCompatActivity() {
         val player1Score = gameLogic.getPlayer1Score()
         val player2Score = gameLogic.getPlayer2Score()
 
-        // Сохраняем результат в статистику
         saveGameResult(winnerName, player1Score, player2Score)
 
         val message = if (surrenderingPlayer == 0) {
@@ -493,13 +492,14 @@ class GameActivity : AppCompatActivity() {
             finish()
         }
     }
+
     private fun saveGameResult(winnerName: String, player1Score: Int, player2Score: Int) {
         try {
             val result = GameResultSimple(
                 player1Name = player1Name,
                 player2Name = player2Name,
-                player1Avatar = player1Avatar,    // Добавлено
-                player2Avatar = player2Avatar,    // Добавлено
+                player1Avatar = player1Avatar,
+                player2Avatar = player2Avatar,
                 winnerName = winnerName,
                 player1Score = player1Score,
                 player2Score = player2Score,
@@ -514,6 +514,16 @@ class GameActivity : AppCompatActivity() {
             e.printStackTrace()
             showSnackbar("Ошибка сохранения: ${e.message}", true)
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Убираем MusicManager.pause() - музыка не выключается
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Музыка уже играет, ничего не делаем
     }
 
     override fun onDestroy() {

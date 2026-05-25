@@ -40,4 +40,11 @@ class SettingsActivity : AppCompatActivity() {
             finish()
         }
     }
+    override fun onResume() {
+        super.onResume()
+        val isMusicOn = SettingsManager.isMusicOn(this)
+        if (isMusicOn && !MusicManager.isPlaying()) {
+            MusicManager.resume()
+        }
+    }
 }

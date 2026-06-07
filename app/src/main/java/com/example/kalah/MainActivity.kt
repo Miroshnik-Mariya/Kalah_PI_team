@@ -2,19 +2,29 @@ package com.example.kalah
 
 import android.app.Dialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import java.io.File
+import java.io.FileOutputStream
 
 class MainActivity : AppCompatActivity() {
 
     private var isMusicOn = true
+    private val PERMISSION_REQUEST_CODE = 100
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,8 +133,104 @@ class MainActivity : AppCompatActivity() {
         okText.setOnClickListener {
             dialog.dismiss()
         }
+
+        // Кнопка "Подробнее о системе"
+        val downloadButton = dialog.findViewById<Button>(R.id.btn_download_manual)
+        downloadButton.setOnClickListener {
+            dialog.dismiss()
+            checkPermissionAndOpenPdf()
+        }
+
         dialog.show()
     }
 
-    // УБИРАЕМ onPause и onResume - музыка не останавливается
+    private fun checkPermissionAndOpenPdf() {
+        // Для Android 13+ (API 33+) нужно другое разрешение
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Android 13+ не требует разрешения для чтения файлов в кэше приложения
+            openPdfFromRaw()
+        }
+        // Для Android 6-12
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
+                    PERMISSION_REQUEST_CODE
+                )
+            } else {
+                openPdfFromRaw()
+            }
+        } else {
+            openPdfFromRaw()
+        }
+    }
+
+    private fun openPdfFromRaw() {
+        try {
+            // Пытаемся открыть PDF из ресурсов
+            val pdfResourceId = resources.getIdentifier("system_manual", "raw", packageName)
+
+            if (pdfResourceId == 0) {
+                Toast.makeText(this, "PDF файл не найден в ресурсах", Toast.LENGTH_LONG).show()
+                return
+            }
+
+            // Копируем PDF из raw во временный файл
+            val inputStream = resources.openRawResource(pdfResourceId)
+            val tempFile = File(cacheDir, "system_manual.pdf")
+
+            FileOutputStream(tempFile).use { outputStream ->
+                inputStream.copyTo(outputStream)
+            }
+            inputStream.close()
+
+            // Открываем PDF
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                val uri = FileProvider.getUriForFile(
+                    this,
+                    "${packageName}.fileprovider",
+                    tempFile
+                )
+
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(uri, "application/pdf")
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+                }
+
+                startActivity(intent)
+            } else {
+                val uri = Uri.fromFile(tempFile)
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(uri, "application/pdf")
+                }
+                startActivity(intent)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Ошибка при открытии PDF: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    openPdfFromRaw()
+                } else {
+                    Toast.makeText(this, "Нужно разрешение для открытия PDF", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
 }
